@@ -1,7 +1,7 @@
 
   # Website
 
-  This is a code bundle for Website. The original project is available at https://www.figma.com/design/aTKOhdri62ffWOkBIFPCeA/Website.
+  This is a code bundle for Website.
 
   ## Running the code
 
