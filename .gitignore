@@ -1,3 +1,6 @@
 node_modules/
 dist/
 .env
+server/.env
+server/captured_data.json
+server/node_modules/

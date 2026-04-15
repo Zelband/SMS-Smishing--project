@@ -1,11 +1,17 @@
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import logoImage from '../../imports/Screenshot_20260410_191521_Drive.jpg';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
+import { trackEvent } from '../api';
 
 export function AccountPicker() {
   const [showCookieBanner, setShowCookieBanner] = useState(true);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    trackEvent('visit');
+    trackEvent('account_picker_view');
+  }, []);
 
   return (
     <div className="min-h-screen bg-white">
